@@ -3,7 +3,7 @@ import MiddlePanel from '@/components/chat/MiddlePanel'
 import RightPanel from '@/components/chat/RightPanel'
 import { useEffect, useState } from 'react'
 import CreateNoteModal from '@/components/note/createNoteModal/CreateNoteModal'
-import { Link, useParams } from 'react-router'
+import { useParams } from 'react-router'
 import { useDispatch, useSelector } from 'react-redux'
 import type { AppDispatch, RootState } from '@/store'
 import { fetchDocOverviewAndQuestions, fetchSingleNote } from '@/store/chatSlice'
@@ -54,7 +54,7 @@ function ChatPage() {
 
     if (id) {
       dispatch(resetNotebookState(id))
-      dispatch(resetChatHistory())
+      dispatch(resetChatHistory(id))
       dispatch(fetchSingleNote(id))
       dispatch(fetchNoteSourceResult(id))
 

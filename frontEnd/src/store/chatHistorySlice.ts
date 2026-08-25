@@ -1,5 +1,5 @@
 import { getNoteChats, type chatHistoryType } from '@/api/notes';
-import { createSlice, configureStore, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit'
 
 
 
@@ -10,6 +10,7 @@ export const fetchChats = createAsyncThunk(
 
 type ChatState = {
   chatHistory: chatHistoryType | null|undefined;
+  activeNoteId: string | null;
   loading: boolean;
   error: string | null;
 };
@@ -17,6 +18,7 @@ type ChatState = {
 
 const chatState :ChatState= {
   chatHistory: null,
+  activeNoteId: null,
   loading: false,
   error: null,
 };
@@ -29,16 +31,16 @@ const chatHistorySlice = createSlice({
     ...chatState
   },
   reducers: {
-    resetChatHistory: (state) => {
+    resetChatHistory: (state, action: PayloadAction<string>) => {
       state.chatHistory = null;
+      state.activeNoteId = action.payload;
       state.loading = false;
       state.error = null;
     },
 
 
     addMessageInChatHistory: (state,action) => {
-
-      if(state.chatHistory){
+      if(state.chatHistory && action.payload?.noteId === state.activeNoteId){
        state.chatHistory?.chatHistory?.push(action.payload)
       }
    
@@ -47,16 +49,19 @@ const chatHistorySlice = createSlice({
 
   },
   extraReducers: (builder) => {
-    builder .addCase(fetchChats.pending, (state) => {
+    builder .addCase(fetchChats.pending, (state, action) => {
         state.chatHistory = null;
+        state.activeNoteId = action.meta.arg.noteId;
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchChats.fulfilled, (state, action: PayloadAction<chatHistoryType | undefined>) => {
+      .addCase(fetchChats.fulfilled, (state, action) => {
+        if (state.activeNoteId !== action.meta.arg.noteId) return;
         state.chatHistory = action.payload;
         state.loading = false;
       })
       .addCase(fetchChats.rejected, (state, action) => {
+        if (state.activeNoteId !== action.meta.arg.noteId) return;
         state.loading = false;
         state.error = action.error.message || "Failed to fetch notes";
       });

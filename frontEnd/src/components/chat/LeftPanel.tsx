@@ -19,8 +19,7 @@ import { toggleAddSourceNoteModal } from "@/store/addSourceSlice";
 import type { NoteType } from "@/types/note-types";
 import { Checkbox } from "../ui/checkbox";
 import { toggleDiscoveryModal } from "@/store/discoveryModalSlice";
-import { useState } from "react";
-import { addDocIds } from "@/store/rightPanelSlice";
+import { addDocIds, setDocIds } from "@/store/rightPanelSlice";
 // import PdfIcon from '@/assets/pdf-1512.svg'
 import PdfIcon from '@/assets/pdf.png'
 
@@ -32,6 +31,7 @@ type LeftPanelProps = {
 const LeftPanel = ({ note, loading }: LeftPanelProps) => {
   const dispatch = useDispatch<AppDispatch>();
   const { leftPanelOpen } = useSelector((state: RootState) => state.chat);
+  const { docIds } = useSelector((state: RootState) => state.rightPanel);
 
   function togglePanel() {
     if (leftPanelOpen) {
@@ -43,19 +43,13 @@ const LeftPanel = ({ note, loading }: LeftPanelProps) => {
     }
   }
 
-  // State to track selected doc IDs
-  const [selectedDocs, setSelectedDocs] = useState<string[]>([]);
-
-
  function handleDocSelect(docId: string) {
-  setSelectedDocs((prev: string[]) =>
-    prev.includes(docId)
-      ? prev.filter((id) => id !== docId) // remove if exists
-      : [...prev, docId] // add if not exists
-  );
-
   dispatch(addDocIds(docId)); 
 }
+
+ function handleSelectAll(checked: boolean) {
+   dispatch(setDocIds(checked ? note.docs.map((doc) => doc._id) : []));
+ }
 
 
 
@@ -125,7 +119,10 @@ const LeftPanel = ({ note, loading }: LeftPanelProps) => {
 
               <div className="space-y-3">
                 <div className="flex items-center gap-2 mb-2">
-                  <Checkbox checked={false} />
+                  <Checkbox
+                    checked={note.docs.length > 0 && docIds.length === note.docs.length}
+                    onCheckedChange={(checked) => handleSelectAll(checked === true)}
+                  />
                   <span className="text-sm font-medium">Select all sources</span>
                 </div>
                 {/* <DocRowSkeleton count={10} /> */}
@@ -135,10 +132,10 @@ const LeftPanel = ({ note, loading }: LeftPanelProps) => {
                     className="flex items-center gap-2 hover:bg-gray-50 p-2 rounded-md"
                   >
                     <SourceIcon type={doc?.source_type} />
-                    <span className="flex-1 text-base text-gray-600 truncate"> {doc?.title}  </span>
+                    <span className="flex-1 truncate text-base text-gray-600"> {doc?.title || doc?.fileName}  </span>
                     <Checkbox
                       className="cursor-pointer"
-                      checked={selectedDocs.includes(doc._id)}
+                      checked={docIds.includes(doc._id)}
                       onCheckedChange={() => handleDocSelect(doc._id)}
                     />
                   </div>

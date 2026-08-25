@@ -1,5 +1,5 @@
 import { getSourceResults } from '@/api/notes';
-import { createSlice, configureStore, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit'
 
 
 
@@ -13,7 +13,7 @@ export const fetchNoteSourceResult = createAsyncThunk(
 const sourceNoteResultState = {
     sources: {} as Array<{ total_source: number, content: string, noteId: string, userId: string }>,
     loading: false,
-    error: null,
+    error: null as string | null,
     sourceModal: { modal: false, title: "", content: "", source_type: "" },
     mindMapModal: { modal: false, title: "", content: "", source_type: "" },
     audioCard: { show: false, title: "", content: "", source_type: "",sourceSectionHeight:100 }

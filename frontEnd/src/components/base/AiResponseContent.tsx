@@ -16,8 +16,39 @@ function parseMetadata(value: string) {
       ? parsed
       : undefined;
   } catch {
-    return undefined;
+    return parseLooseMetadata(value);
   }
+}
+
+function parseLooseMetadata(value: string): ResponseMetadata | undefined {
+  const fields: ResponseMetadata = {};
+  let fieldCount = 0;
+
+  const readArray = (key: "tools_called" | "library_used" | "external_sources") => {
+    const match = value.match(new RegExp(`(?:\\*\\*)?["']?${key}["']?\\s*:?(?:\\*\\*)?\\s*:?\\s*(\\[[^\\n]*\\])`, "i"));
+    if (!match) return;
+    try {
+      const parsed = JSON.parse(match[1].replace(/'/g, '"'));
+      if (Array.isArray(parsed)) {
+        fields[key] = parsed.map(String);
+        fieldCount += 1;
+      }
+    } catch {
+      // Leave malformed values visible as normal Markdown.
+    }
+  };
+
+  readArray("tools_called");
+  readArray("library_used");
+  readArray("external_sources");
+
+  const confidence = value.match(/(?:\*\*)?["']?confidence["']?\s*:?(?:\*\*)?\s*:?\s*["']?([a-z]+)["']?/i)?.[1];
+  if (confidence) {
+    fields.confidence = confidence;
+    fieldCount += 1;
+  }
+
+  return fieldCount >= 2 ? fields : undefined;
 }
 
 function splitResponseMetadata(content: string) {
@@ -42,6 +73,13 @@ function splitResponseMetadata(content: string) {
   if (labelledStart >= 0) {
     const metadata = parseMetadata(content.slice(labelledStart).match(/\{[\s\S]*\}/)?.[0] || "");
     if (metadata) return { answer: content.slice(0, labelledStart).trim(), metadata };
+  }
+
+  // Some providers omit the surrounding braces and return Markdown-bold keys.
+  const looseMetadataStart = content.search(/(?:^|\n)\s*(?:[-*]\s*)?(?:\*\*)?["']?(?:tools_called|library_used|external_sources|confidence)["']?/i);
+  if (looseMetadataStart >= 0) {
+    const metadata = parseLooseMetadata(content.slice(looseMetadataStart));
+    if (metadata) return { answer: content.slice(0, looseMetadataStart).trim(), metadata };
   }
 
   const jsonStart = content.lastIndexOf("\n{");

@@ -430,7 +430,7 @@ const MiddlePannel = ({
   note,
   aiResult,
 }: {
-  chatHistory: chatHistoryType;
+  chatHistory: chatHistoryType | null | undefined;
   userId: string;
   note: NoteType;
   aiResult: questionAndDocOverviewType;
@@ -593,7 +593,7 @@ const MiddlePannel = ({
           />
 
           <div className="text-xs text-gray-500 whitespace-nowrap">
-            {docIds?.length} sources
+            {docIds?.length} selected
           </div>
 
           <button
@@ -642,7 +642,7 @@ const MiddlePanelHeader = ({ note, aiResult }: { note: NoteType; aiResult: quest
         </div>
         <div className="min-w-0">
           <h1 className="truncate text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">{note?.title || "Untitled notebook"}</h1>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-200">{sourceCount} {sourceCount === 1 ? "source" : "sources"}</p>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-200">{sourceCount} {sourceCount === 1 ? "source" : "sources"} in notebook</p>
         </div>
       </div>
 

@@ -18,6 +18,7 @@ export type NoteType = {
 export type DocType = {
     _id: string,
     fileName: string,
+    title?: string,
     noteId: string,
     userId:string,
     source_type:string
