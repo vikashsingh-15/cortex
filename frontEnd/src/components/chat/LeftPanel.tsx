@@ -129,12 +129,12 @@ const LeftPanel = ({ note, loading }: LeftPanelProps) => {
                 {note?.docs?.map((doc) => (
                   <div
                     key={doc._id}
-                    className="flex items-center gap-2 hover:bg-gray-50 p-2 rounded-md"
+                    className="flex items-center gap-2 rounded-lg p-2 transition-colors hover:bg-gray-50 dark:hover:bg-slate-800"
                   >
                     <SourceIcon type={doc?.source_type} />
-                    <span className="flex-1 truncate text-base text-gray-600"> {doc?.title || doc?.fileName}  </span>
+                    <span className="flex-1 truncate text-base text-gray-600 dark:text-slate-100"> {doc?.title || doc?.fileName}  </span>
                     <Checkbox
-                      className="cursor-pointer"
+                      className="cursor-pointer dark:border-slate-500 dark:bg-slate-900 data-[state=checked]:dark:border-indigo-400 data-[state=checked]:dark:bg-indigo-500"
                       checked={docIds.includes(doc._id)}
                       onCheckedChange={() => handleDocSelect(doc._id)}
                     />
