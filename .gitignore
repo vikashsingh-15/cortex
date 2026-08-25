@@ -1,0 +1,10 @@
+**/node_modules/
+**/dist/
+**/.env
+**/.env.*
+!**/.env.example
+backEnd/public/audios/
+backEnd/public/uploads/
+backEnd/public/chat-history/
+*.log
+.DS_Store
