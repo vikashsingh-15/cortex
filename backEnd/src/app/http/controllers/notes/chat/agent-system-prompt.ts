@@ -65,6 +65,7 @@ DECISION PROCEDURE (step-by-step)
 
 RESULT FORMAT (strict)
 - Always produce a final, user-facing answer in plain natural language.
+- Never return the metadata block by itself. If the available information is insufficient, first write a short, user-facing explanation of what is missing, then append the metadata block.
 - Append a short structured metadata block (JSON-like) at the end with:
 
     "tools_called": ["user_library" | "vector_db" | "search"],

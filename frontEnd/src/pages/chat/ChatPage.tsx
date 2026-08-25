@@ -7,14 +7,13 @@ import { Link, useParams } from 'react-router'
 import { useDispatch, useSelector } from 'react-redux'
 import type { AppDispatch, RootState } from '@/store'
 import { fetchDocOverviewAndQuestions, fetchSingleNote } from '@/store/chatSlice'
-import { Trash2 } from 'lucide-react'
 import UserAvatar from '@/components/base/UserAvatar'
 import ThemeToggle from '@/components/base/ThemeToggle'
 import DiscoveryModal from '@/components/note/DiscoveryModal'
 import { EditNote } from '@/components/note/EditNote'
-import { fetchNoteSourceResult } from '@/store/rightPanelSlice'
+import { fetchNoteSourceResult, resetNotebookState } from '@/store/rightPanelSlice'
 import { CreditMenu } from '@/components/base/CreditMenu'
-import { fetchChats } from '@/store/chatHistorySlice'
+import { fetchChats, resetChatHistory } from '@/store/chatHistorySlice'
 import { getUserData } from '@/helper/getUserData'
 import BuyCreditModal from '@/components/payment/BuyCreditModal'
 import { fetchUserCreditAndPayment } from '@/store/creditMenuSlice'
@@ -54,6 +53,8 @@ function ChatPage() {
   useEffect(() => {
 
     if (id) {
+      dispatch(resetNotebookState(id))
+      dispatch(resetChatHistory())
       dispatch(fetchSingleNote(id))
       dispatch(fetchNoteSourceResult(id))
 
@@ -90,7 +91,7 @@ function ChatPage() {
     <div className="flex h-full min-h-0 flex-col">
       <header className="flex shrink-0 items-center justify-between gap-3">
 
-        <EditNote note={note}></EditNote>
+        <EditNote note={note} onDelete={() => setDeleteDialogOpen(true)} />
         <div className='flex shrink-0 items-center gap-4'>
           {/* header actions here */}
          
@@ -98,16 +99,6 @@ function ChatPage() {
           <ThemeToggle />
           <UserAvatar />
           <BuyCreditModal />
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setDeleteDialogOpen(true)}
-            className="text-slate-500 hover:bg-red-50 hover:text-red-600"
-            aria-label="Delete notebook"
-            title="Delete notebook"
-          >
-            <Trash2 size={18} />
-          </Button>
         </div>
       </header>
 

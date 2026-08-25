@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { MoveLeft, Loader2, } from "lucide-react";
+import { MoveLeft, Trash2 } from "lucide-react";
 
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -17,10 +17,11 @@ const editNoteSchema = z.object({
 type EditNoteFormValues = z.infer<typeof editNoteSchema>;
 interface EditNoteProps {
   note?: { _id: string; title: string };
+  onDelete?: () => void;
   //   onSave: (data: EditNoteFormValues) => Promise<void>;
 }
 
-export const EditNote = ({ note }: EditNoteProps) => {
+export const EditNote = ({ note, onDelete }: EditNoteProps) => {
   const {
     register,
     handleSubmit,
@@ -78,6 +79,15 @@ export const EditNote = ({ note }: EditNoteProps) => {
           )}
         </div>
       </div>
+      <button
+        type="button"
+        onClick={onDelete}
+        className="flex size-8 shrink-0 items-center justify-center rounded-lg text-slate-400 transition hover:bg-red-50 hover:text-red-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400 dark:text-slate-300 dark:hover:bg-red-950 dark:hover:text-red-200"
+        aria-label="Delete notebook"
+        title="Delete notebook"
+      >
+        <Trash2 size={17} />
+      </button>
 
     </div>
   );

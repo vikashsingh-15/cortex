@@ -29,7 +29,11 @@ const chatHistorySlice = createSlice({
     ...chatState
   },
   reducers: {
-   
+    resetChatHistory: (state) => {
+      state.chatHistory = null;
+      state.loading = false;
+      state.error = null;
+    },
 
 
     addMessageInChatHistory: (state,action) => {
@@ -44,6 +48,7 @@ const chatHistorySlice = createSlice({
   },
   extraReducers: (builder) => {
     builder .addCase(fetchChats.pending, (state) => {
+        state.chatHistory = null;
         state.loading = true;
         state.error = null;
       })
@@ -59,7 +64,7 @@ const chatHistorySlice = createSlice({
   },
 })
 
-export const { addMessageInChatHistory} = chatHistorySlice.actions
+export const { addMessageInChatHistory, resetChatHistory } = chatHistorySlice.actions
 
 
 

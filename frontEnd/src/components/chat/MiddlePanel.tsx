@@ -420,8 +420,7 @@ import { addMessageInChatHistory } from "@/store/chatHistorySlice";
 import type { NoteType } from "@/types/note-types";
 import { showError } from "@/util/toast-notification";
 
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import { AiResponseContent } from "@/components/base/AiResponseContent";
 import { SuggestedInput } from "./SuggestedInput";
 import { ChatInput } from "./ChatInput";
 
@@ -681,38 +680,8 @@ function simplifyOverview(overview?: string) {
 
 type Msg = { role: "ai" | "user"; content: string };
 
-type ResponseMetadata = {
-  tools_called?: string[];
-  library_used?: string[];
-  external_sources?: string[];
-  confidence?: "high" | "medium" | "low" | string;
-};
-
-function splitResponseMetadata(content: string) {
-  const metadataStart = content.search(/(?:^|\n)\s*\**metadata\**\s*:\s*/i);
-  if (metadataStart === -1) return { answer: content, metadata: undefined };
-
-  const metadataSection = content.slice(metadataStart);
-  const metadataText = metadataSection.match(/\{[\s\S]*\}/)?.[0];
-  if (!metadataText) return { answer: content, metadata: undefined };
-
-  try {
-    const metadata = JSON.parse(metadataText) as ResponseMetadata;
-    if (!Array.isArray(metadata.tools_called) && !metadata.confidence) {
-      return { answer: content, metadata: undefined };
-    }
-
-    return { answer: content.slice(0, metadataStart).trim(), metadata };
-  } catch {
-    return { answer: content, metadata: undefined };
-  }
-}
-
 const ChatMessage = memo(({ msg }: { msg?: Msg }) => {
   if (!msg) return null;
-  const { answer, metadata } = msg.role === "ai"
-    ? splitResponseMetadata(msg.content)
-    : { answer: msg.content, metadata: undefined };
 
   return (
     <div
@@ -723,135 +692,15 @@ const ChatMessage = memo(({ msg }: { msg?: Msg }) => {
           max-w-[90%] px-4 text-sm
           ${
             msg.role === "ai"
-              ? "text-gray-800 py-2"
-              : "bg-indigo-100 text-gray-900 py-4 rounded-br-none shadow rounded-2xl"
+              ? "py-2 text-slate-800 dark:text-slate-100"
+              : "rounded-2xl rounded-br-none bg-indigo-100 py-4 text-slate-900 shadow dark:bg-indigo-950 dark:text-slate-100"
           }
         `}
       >
-        <div
-          className="
-            break-words whitespace-pre-wrap
-            overflow-x-hidden
-            leading-normal
-           
-            [&_a]:underline [&_a]:text-blue-600
-            [&_pre]:my-1 [&_pre]:p-1 [&_pre]:rounded [&_pre]:bg-gray-100 [&_pre]:overflow-x-auto [&_code]:font-mono
-          "
-        >
-          <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
-            components={{
-              a: ({ node, ...props }) => <a {...props} />,
-              ul: ({ node, ...props }) => (
-                <ul className="list-disc list-inside space-y-0" {...props} />
-              ),
-              ol: ({ node, ...props }) => <ol {...props} />,
-              li: ({ node, ...props }) => (
-                <li style={{ marginBottom: "-16px" }} {...props} />
-              ),
-              p: ({ node, ...props }) => (
-                <p
-                  style={{ marginBottom: msg.role === "ai" ? "0px" : "" }}
-                  {...props}
-                />
-              ),
-
-              h1: ({ node, ...props }) => (
-                <h1
-                  style={{ marginBottom: "-20px" }}
-                  className="text-2xl  font-bold text-gray-800 my-"
-                  {...props}
-                />
-              ),
-              h2: ({ node, ...props }) => (
-                <h2
-                  style={{ marginBottom: "-20px" }}
-                  className="text-xl font-semibold text-gray-700 my-"
-                  {...props}
-                />
-              ),
-              h3: ({ node, ...props }) => (
-                <h2
-                  style={{ marginBottom: "-20px" }}
-                  className="text-xl font-semibold text-gray-700 my-"
-                  {...props}
-                />
-              ),
-
-              strong: ({ node, ...props }) => (
-                <strong className="font-bold text-gray-700" {...props} />
-              ),
-            }}
-          >
-            {answer}
-          </ReactMarkdown>
-        </div>
-        {metadata && <ResponseMetadataCard metadata={metadata} />}
+        <AiResponseContent content={msg.content} />
       </div>
     </div>
   );
 });
-
-function ResponseMetadataCard({ metadata }: { metadata: ResponseMetadata }) {
-  const confidenceClass = metadata.confidence === "high"
-    ? "bg-emerald-50 text-emerald-700"
-    : metadata.confidence === "low"
-      ? "bg-amber-50 text-amber-700"
-      : "bg-slate-100 text-slate-600";
-
-  return (
-    <details open className="mt-4 overflow-hidden rounded-xl border border-indigo-100 bg-indigo-50/40 text-xs text-slate-600">
-      <summary className="flex cursor-pointer list-none items-center justify-between gap-2 bg-white/60 px-3 py-2.5 font-medium marker:hidden">
-        <span className="text-slate-700">Answer details</span>
-        {metadata.confidence && <span className={`rounded-full px-2 py-0.5 capitalize ${confidenceClass}`}>{metadata.confidence} confidence</span>}
-      </summary>
-      <div className="space-y-3 border-t border-indigo-100 px-3 py-3">
-        <MetadataRow label="Tools used" values={metadata.tools_called} emptyText="No tools recorded" />
-        <MetadataRow label="Notebook sources" values={metadata.library_used} emptyText="No notebook sources recorded" />
-        <MetadataRow label="External sources" values={metadata.external_sources} emptyText="None" />
-      </div>
-    </details>
-  );
-}
-
-function MetadataRow({ label, values, emptyText }: { label: string; values?: string[]; emptyText: string }) {
-  return (
-    <div>
-      <p className="mb-1 font-semibold text-slate-500">{label}</p>
-      {values?.length ? (
-        <div className="flex flex-wrap gap-1.5">
-          {values.map((value) => isUrl(value) ? (
-            <a key={value} href={value} target="_blank" rel="noreferrer" className="max-w-full truncate rounded-md bg-white px-2 py-1 text-indigo-600 ring-1 ring-indigo-100 transition hover:bg-indigo-50 hover:underline">
-              {formatExternalSource(value)}
-            </a>
-          ) : (
-            <span key={value} className="max-w-full truncate rounded-md bg-white px-2 py-1 text-slate-700 ring-1 ring-slate-200">{formatMetadataValue(value)}</span>
-          ))}
-        </div>
-      ) : <p className="text-slate-400">{emptyText}</p>}
-    </div>
-  );
-}
-
-function isUrl(value: string) {
-  return /^https?:\/\//i.test(value);
-}
-
-function formatExternalSource(value: string) {
-  try {
-    return new URL(value).hostname.replace(/^www\./, "");
-  } catch {
-    return value;
-  }
-}
-
-function formatMetadataValue(value: string) {
-  const labels: Record<string, string> = {
-    vector_db: "Vector database",
-    user_library: "Notebook library",
-    search: "Web search",
-  };
-  return labels[value] || value.replace(/_/g, " ");
-}
 
 export default MiddlePannel;

@@ -25,11 +25,27 @@ export const rightPanelSlice = createSlice({
     name: 'rightPanel',
     initialState: {
         docIds: [] as string[],
+        activeNoteId: null as string | null,
         ...sourceNoteResultState
 
 
     },
     reducers: {
+
+        resetNotebookState: (state, action: PayloadAction<string>) => {
+            state.activeNoteId = action.payload
+            state.docIds = []
+            state.sources = []
+            state.sourceModal = { modal: false, title: "", content: "", source_type: "" }
+            state.mindMapModal = { modal: false, title: "", content: "", source_type: "" }
+            state.audioCard = { show: false, title: "", content: "", source_type: "", sourceSectionHeight: 100 }
+            state.loading = false
+            state.error = null
+        },
+
+        setDocIds: (state, action: PayloadAction<string[]>) => {
+            state.docIds = action.payload
+        },
 
 
         closeMindMap: (state) => {
@@ -91,22 +107,25 @@ export const rightPanelSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            .addCase(fetchNoteSourceResult.pending, (state) => {
+            .addCase(fetchNoteSourceResult.pending, (state, action) => {
+                state.activeNoteId = action.meta.arg;
                 state.loading = true;
                 state.error = null;
             })
             .addCase(fetchNoteSourceResult.fulfilled, (state, action) => {
+                if (state.activeNoteId !== action.meta.arg) return;
                 state.sources = action.payload.sources;
                 state.loading = false;
             })
             .addCase(fetchNoteSourceResult.rejected, (state, action) => {
+                if (state.activeNoteId !== action.meta.arg) return;
                 state.loading = false;
                 state.error = action.error.message || "Failed to fetch sources";
             });
     },
 })
 
-export const { addDocIds, showSourceModalContent, closeAudioCard, closeSourceModal, closeMindMap } = rightPanelSlice.actions
+export const { addDocIds, setDocIds, resetNotebookState, showSourceModalContent, closeAudioCard, closeSourceModal, closeMindMap } = rightPanelSlice.actions
 
 
 export default rightPanelSlice.reducer

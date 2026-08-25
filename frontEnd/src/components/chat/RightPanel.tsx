@@ -106,7 +106,7 @@ const [audioLoading, setAudioLoading] = useState(false);
 
 
     <div
-      className={`bg-white shadow-sm rounded-sm h-full min-h-0 overflow-y-auto transition-all duration-300 ml-auto mr-auto ${rightPanelOpen ? "w-[25%] p-4" : "w-16 p-2"
+      className={`h-full min-h-0 overflow-y-auto rounded-sm bg-white shadow-sm transition-all duration-300 dark:bg-slate-900 ${rightPanelOpen ? "w-[25%] p-4" : "w-16 p-2"
         }`}
     >
       <SourceModal />
@@ -114,11 +114,11 @@ const [audioLoading, setAudioLoading] = useState(false);
 
       {/* Header */}
       <div className="flex justify-between items-center mb-2">
-        {rightPanelOpen && <p className="text-base text-gray-800">Studio</p>}
+        {rightPanelOpen && <p className="text-base text-gray-800 dark:text-slate-100">Studio</p>}
         <Button
           variant="link"
           size="icon"
-          className="size-8 hover:bg-slate-100 cursor-pointer"
+          className="size-8 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800"
           onClick={() => togglePanel()}
         >
           <PanelRight size={52} />
@@ -154,10 +154,10 @@ const [audioLoading, setAudioLoading] = useState(false);
       {rightPanelOpen ? (
 
 
-        <section className="mt-6 border-t border-slate-100 pt-4">
+        <section className="mt-6 border-t border-slate-100 pt-4 dark:border-slate-700">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-slate-800">Generated sources</h2>
-            {sources?.length > 0 && <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500">{sources.length}</span>}
+            <h2 className="text-sm font-semibold text-slate-800 dark:text-slate-100">Generated sources</h2>
+            {sources?.length > 0 && <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500 dark:bg-slate-700 dark:text-slate-200">{sources.length}</span>}
           </div>
 
         {sources?.length > 0 ? (<div className={`space-y-2 ${audioCard.show ? 'max-h-60' : 'max-h-[min(24rem,45vh)]'} overflow-y-auto pr-1`}>
@@ -167,27 +167,27 @@ const [audioLoading, setAudioLoading] = useState(false);
             <div
               key={source._id}
               onClick={() => showSourceModal(source)}
-              className="group flex cursor-pointer items-center gap-3 rounded-xl border border-slate-100 bg-white p-3 shadow-sm transition hover:border-indigo-100 hover:bg-indigo-50/40 hover:shadow"
+              className="group flex cursor-pointer items-center gap-3 rounded-xl border border-slate-100 bg-white p-3 shadow-sm transition hover:border-indigo-100 hover:bg-indigo-50/40 hover:shadow dark:border-slate-700 dark:bg-slate-900 dark:hover:border-indigo-400 dark:hover:bg-slate-800"
             >
-              <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-slate-50 group-hover:bg-white">
+              <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-slate-50 group-hover:bg-white dark:bg-slate-800 dark:group-hover:bg-slate-700">
                 <SourceIcon type={source?.source_type} />
               </div>
 
               <div className="min-w-0 flex-1">
-                <span className="block truncate text-sm font-medium text-slate-700">{truncateTitle(source?.title, 35) || 'Untitled source'}</span>
-                <span className="mt-1 block text-xs capitalize text-slate-500">
+                <span className="block truncate text-sm font-medium text-slate-700 dark:text-slate-100">{truncateTitle(source?.title, 35) || 'Untitled source'}</span>
+                <span className="mt-1 block text-xs capitalize text-slate-500 dark:text-slate-300">
                   {formatSourceMeta(source?.source_type, source?.total_source)}
                 </span>
               </div>
             </div>
           ))}
         </div>) : (
-          <div className="flex flex-col items-center rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-8 text-center">
+          <div className="flex flex-col items-center rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-8 text-center dark:border-slate-700 dark:bg-slate-800">
             <FileText className="text-slate-400" size={36} />
-            <p className="mt-3 text-sm font-medium text-slate-600">
+            <p className="mt-3 text-sm font-medium text-slate-600 dark:text-slate-100">
               No generated sources yet
             </p>
-            <p className="mt-1 text-xs text-slate-400">Select a source, then choose an option above.</p>
+            <p className="mt-1 text-xs text-slate-400 dark:text-slate-300">Select a source, then choose an option above.</p>
           </div>
 
         )}
@@ -243,9 +243,9 @@ const PanelItem = ({
       onClick={!loading ? generateSource : undefined}
       className={`flex items-center justify-center rounded-md transition
         ${rightPanelOpen ? "flex-col p-3 h-24" : "p-2 h-14"}
-        ${label === "Mind Map" ? "bg-orange-50" : "bg-gray-100"}
-        ${label === "Audio Overview" ? "bg-green-50" : ""}
-        ${loading ? "cursor-not-allowed opacity-60" : "hover:bg-gray-200 cursor-pointer"}
+        ${label === "Mind Map" ? "bg-orange-50 text-orange-950 dark:bg-orange-950 dark:text-orange-100" : "bg-gray-100 text-slate-800 dark:bg-slate-800 dark:text-slate-100"}
+        ${label === "Audio Overview" ? "bg-green-50 text-green-950 dark:bg-emerald-950 dark:text-emerald-100" : ""}
+        ${loading ? "cursor-not-allowed opacity-60" : "cursor-pointer hover:bg-gray-200 dark:hover:bg-slate-700"}
       `}
     >
       {loading ? (
@@ -255,7 +255,7 @@ const PanelItem = ({
       )}
 
       {rightPanelOpen && (
-            <span className="mt-1.5 text-center text-xs font-medium text-gray-700">
+            <span className="mt-1.5 text-center text-xs font-medium text-gray-700 dark:text-inherit">
           {loading ? "Loading..." : label}
         </span>
       )}
@@ -306,7 +306,7 @@ const ReportPanelItem = ({ rightPanelOpen, noteId, docIds, fetchSources }: { rig
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <div
-          className={`flex items-center justify-center rounded-md bg-blue-50 hover:bg-gray-200 cursor-pointer transition ${rightPanelOpen ? "flex-col p-4 h-24" : "p-2 h-14"}`}
+          className={`flex cursor-pointer items-center justify-center rounded-md bg-blue-50 text-blue-950 transition hover:bg-gray-200 dark:bg-blue-950 dark:text-blue-100 dark:hover:bg-slate-700 ${rightPanelOpen ? "flex-col p-4 h-24" : "p-2 h-14"}`}
         >
           {loading ? (
             <div className="animated-gradient-border w-full h-full flex items-center justify-center">
@@ -319,7 +319,7 @@ const ReportPanelItem = ({ rightPanelOpen, noteId, docIds, fetchSources }: { rig
           )}
 
           {rightPanelOpen && (
-            <span className="mt-2 text-sm font-medium text-gray-700">
+            <span className="mt-2 text-sm font-medium text-gray-700 dark:text-inherit">
               Reports
             </span>
 

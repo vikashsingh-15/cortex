@@ -80,6 +80,7 @@ const chatSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchSingleNote.pending, (state) => {
+        state.note = {} as NoteType;
         state.loading = true;
         state.error = null;
       })

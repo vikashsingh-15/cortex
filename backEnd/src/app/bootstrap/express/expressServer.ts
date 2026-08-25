@@ -56,7 +56,8 @@ export function expressServer(app: Express, PORT: number) {
 
 
 
-    const sess = {
+    const isProduction = process.env.NODE_ENV === 'production'
+    const sess: session.SessionOptions = {
         store: MongoStore.create({
             mongoUrl: process.env.DB_URL,
             collectionName: "sessions",
@@ -64,15 +65,16 @@ export function expressServer(app: Express, PORT: number) {
         secret: process.env.COOKIE_KEY as string,
         resave: false,
         saveUninitialized: false,
-        cookie: { secure: false, sameSite: "lax" as const }
+        cookie: {
+            secure: isProduction,
+            sameSite: isProduction ? "none" : "lax",
+        }
     }
 
 
 
-    if (process.env.NODE_ENV === 'production') {
+    if (isProduction) {
         app.set('trust proxy', 1) // trust first proxy
-        sess.cookie.secure = true // serve secure cookies
-        sess.cookie.sameSite = "none"
     }
 
     app.use(session(sess))
