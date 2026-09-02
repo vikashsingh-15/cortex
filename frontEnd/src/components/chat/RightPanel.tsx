@@ -106,7 +106,7 @@ const [audioLoading, setAudioLoading] = useState(false);
 
 
     <div
-      className={`h-full min-h-0 overflow-y-auto rounded-sm bg-white shadow-sm transition-all duration-300 dark:bg-slate-900 ${rightPanelOpen ? "w-[25%] p-4" : "w-16 p-2"
+      className={`h-full min-h-0 overflow-y-auto rounded-sm bg-white shadow-sm transition-all duration-300 z-30 dark:bg-slate-900 ${rightPanelOpen ? "fixed inset-y-0 right-0 w-[min(92vw,24rem)] p-4 md:static md:w-[25%]" : "fixed inset-y-0 -right-full w-[min(92vw,24rem)] p-2 md:static md:right-auto md:w-16"
         }`}
     >
       <SourceModal />

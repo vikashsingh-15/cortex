@@ -56,9 +56,9 @@ const LeftPanel = ({ note, loading }: LeftPanelProps) => {
 
   return (
     <div
-      className={`bg-white shadow-sm h-full min-h-0 transition-all duration-300 flex flex-col ${leftPanelOpen
-        ? "w-[25%] p-4 rounded-md"
-        : "w-16 p-2 rounded-r-2xl rounded-l-2xl"
+      className={`bg-white shadow-sm h-full min-h-0 transition-all duration-300 flex flex-col z-30 ${leftPanelOpen
+        ? "fixed inset-y-0 left-0 w-[min(88vw,22rem)] p-4 rounded-r-md md:static md:w-[25%] md:rounded-md"
+        : "fixed inset-y-0 -left-full w-[min(88vw,22rem)] p-2 rounded-r-2xl md:static md:left-auto md:w-16 md:rounded-r-2xl md:rounded-l-2xl"
         }`}
     >
       {/* Header */}

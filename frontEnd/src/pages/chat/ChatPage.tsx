@@ -21,6 +21,7 @@ import { deleteNote } from '@/api/notes'
 import { showError, showSuccess } from '@/util/toast-notification'
 import { useNavigate } from 'react-router'
 import { Button } from '@/components/ui/button'
+import { PanelLeft, PanelRight } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -89,15 +90,21 @@ function ChatPage() {
 
   return (
     <div className="flex h-full min-h-0 flex-col">
-      <header className="flex shrink-0 items-center justify-between gap-3">
+      <header className="flex shrink-0 flex-wrap items-center justify-between gap-2 pb-1">
 
         <EditNote note={note} onDelete={() => setDeleteDialogOpen(true)} />
-        <div className='flex shrink-0 items-center gap-4'>
+        <div className='flex min-w-0 shrink-0 flex-wrap items-center justify-end gap-2 sm:gap-4'>
+          <Button variant="outline" size="icon" className="md:hidden" aria-label="Open sources" onClick={() => dispatch({ type: "chat/toggleLeftPanel" })}>
+            <PanelLeft size={18} />
+          </Button>
           {/* header actions here */}
          
           <CreditMenu result={result} />
           <ThemeToggle />
           <UserAvatar />
+          <Button variant="outline" size="icon" className="md:hidden" aria-label="Open studio" onClick={() => dispatch({ type: "chat/toggleRightPanel" })}>
+            <PanelRight size={18} />
+          </Button>
           <BuyCreditModal />
         </div>
       </header>
@@ -123,7 +130,7 @@ function ChatPage() {
 
 
 
-      <main className="mt-2 flex min-h-0 flex-1 gap-2">
+      <main className="relative mt-2 flex min-h-0 flex-1 gap-2 overflow-hidden">
 
         <LeftPanel loading={loading} note={note} />
         <MiddlePanel aiResult={aiResult} chatHistory={chatHistory} note={note} userId={userData?._id}></MiddlePanel>

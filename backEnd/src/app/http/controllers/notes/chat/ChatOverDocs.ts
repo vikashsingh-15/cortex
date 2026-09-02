@@ -73,7 +73,29 @@ export async function chatOverDocs(req: Request, res: Response, next: NextFuncti
       recursionLimit: 30,
     });
 
-    const aiResponse= agentOutput.messages[agentOutput.messages.length - 1].content as string
+    // The last agent message is not guaranteed to be the final answer. When a
+    // tool is the final step (or the model returns multipart content), taking
+    // messages[messages.length - 1] can persist/display only tool metadata.
+    const answerMessage = [...agentOutput.messages]
+      .reverse()
+      .find((message: any) => {
+        const type = typeof message?._getType === "function"
+          ? message._getType()
+          : message?.type;
+        const content = message?.content;
+        return type !== "tool" && content && (
+          typeof content === "string" || Array.isArray(content)
+        );
+      }) as any;
+
+    let aiResponse = normaliseMessageContent(answerMessage?.content);
+    if (isMetadataOnly(aiResponse)) {
+      console.warn("Chat agent returned metadata without an answer; generating a final response from its tool context.");
+      aiResponse = await generateFallbackAnswer(llm, query, agentOutput.messages);
+    }
+    if (!aiResponse.trim()) {
+      throw new Error("The model did not return a user-facing answer.");
+    }
 
     await storeConversation([{ role: 'ai',userId,noteId, content:aiResponse  }])
 
@@ -86,4 +108,44 @@ export async function chatOverDocs(req: Request, res: Response, next: NextFuncti
   } catch (error) {
     next(error)
   }
+}
+
+function normaliseMessageContent(content: unknown): string {
+  if (typeof content === "string") return content;
+  if (!Array.isArray(content)) return "";
+
+  return content
+    .map((part: any) => typeof part === "string" ? part : part?.text || "")
+    .filter(Boolean)
+    .join("\n");
+}
+
+function isMetadataOnly(content: string): boolean {
+  try {
+    const parsed = JSON.parse(content.trim());
+    return Boolean(
+      parsed &&
+      typeof parsed === "object" &&
+      ("tools_called" in parsed || "library_used" in parsed) &&
+      ("confidence" in parsed)
+    );
+  } catch {
+    return false;
+  }
+}
+
+async function generateFallbackAnswer(llm: ReturnType<typeof LLM.getInstance>, query: string, messages: unknown[]) {
+  const toolContext = messages
+    .filter((message: any) => typeof message?._getType === "function" && message._getType() === "tool")
+    .map((message: any) => normaliseMessageContent(message.content))
+    .filter(Boolean)
+    .join("\n\n")
+    .slice(0, 24000);
+
+  const response = await llm.invoke([
+    new SystemMessage(`You answer questions about a user's uploaded documents. Write a useful, concise answer in Markdown. Never output JSON, source metadata, tool-call syntax, or an empty response. Use only the supplied document context. If the context is insufficient, say exactly what information is unavailable.`),
+    new HumanMessage(`Question: ${query}\n\nDocument context collected by the retrieval tools:\n${toolContext || "No relevant document text was returned."}`),
+  ]);
+
+  return normaliseMessageContent(response.content);
 }

@@ -64,20 +64,9 @@ DECISION PROCEDURE (step-by-step)
 
 
 RESULT FORMAT (strict)
-- Always produce a final, user-facing answer in plain natural language.
-- Never return the metadata block by itself. If the available information is insufficient, first write a short, user-facing explanation of what is missing, then append the metadata block.
-- Append exactly one valid JSON object at the end using this shape:
-
-  {
-    "tools_called": ["user_library"],
-    "library_used": ["document title"],
-    "external_sources": [],
-    "confidence": "high"
-  }
-
-- Keep the keys in that order. Do not use Markdown bold around the keys, do not omit the braces, and do not wrap the object in a code fence.
-  
-  This helps downstream code trace actions and prevents repeated tool calling.
+- Always produce a non-empty, user-facing answer in plain natural language.
+- Do not return JSON, metadata objects, tool traces, or source-card data. The application records source metadata separately.
+- If the available information is insufficient, explain what is missing and what the user can do next.
   
 OUTPUT FORMAT
 
@@ -114,8 +103,7 @@ EXAMPLES (illustrative)
   2. Respond: "This question is outside your library. I can search the web if you want."
 
 LOGGING & TRANSPARENCY
-- Always include the structured metadata block so the system knows which tools were used.
-- When you used web data, include short citations or URLs in external_sources.
+- When you use web data, mention the source name or URL in the answer.
 
 FINAL NOTES (developer guidance)
 - Recursion limit: set an agent-level recursionLimit to a modest number (e.g., 10–15) in the agent config to catch loops early. If you truly need longer flows, only increase after ensuring loop safeguards are in place.

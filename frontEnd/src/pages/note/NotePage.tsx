@@ -96,14 +96,14 @@ function NotePage() {
 
 
 
-                <div className='flex justify-between'>
+                <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
                     <div>
                         <h1 className="mb-6 text-2xl font-bold text-gray-800 dark:text-slate-100">
                             Recent notebooks
                         </h1>
                     </div>
-                    <div>
-                        <Input onChange={searchNote} value={search} placeholder='search...'></Input>
+                    <div className="w-full sm:w-64">
+                        <Input className="w-full" onChange={searchNote} value={search} placeholder='Search notebooks...'></Input>
                     </div>
 
                 </div>

@@ -542,10 +542,8 @@ const MiddlePannel = ({
 
   return (
     <div
-      style={{
-        width: `${middlePanelDefaultWidth}%`,
-      }}
-      className={`bg-white transition-all duration-300 shadow-sm rounded-md h-full min-h-0 p-4 flex flex-col`}
+      style={{ "--panel-width": `${middlePanelDefaultWidth}%` } as React.CSSProperties}
+      className={`w-full md:w-[var(--panel-width)] bg-white transition-all duration-300 shadow-sm rounded-md h-full min-h-0 p-3 sm:p-4 flex flex-col min-w-0`}
     >
       {/* chat section */}
       <div
@@ -585,14 +583,14 @@ const MiddlePannel = ({
       {/* bordered chat-input card */}
       <div className="relative border border-gray-200 rounded-2xl p-3 bg-white">
         {/* main input row */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <ChatInput
             inputValue={inputValue}
             setInputValue={setInputValue}
             onKeyDownMessage={onKeyDownMessage}
           />
 
-          <div className="text-xs text-gray-500 whitespace-nowrap">
+          <div className="hidden text-xs text-gray-500 whitespace-nowrap sm:block">
             {docIds?.length} selected
           </div>
 

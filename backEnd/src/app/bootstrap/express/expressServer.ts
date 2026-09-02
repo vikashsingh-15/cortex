@@ -172,7 +172,7 @@ export function expressServer(app: Express, PORT: number) {
                     path: "/",
                     httpOnly: true,
                     secure: process.env.NODE_ENV === "production", // only secure in prod
-                    sameSite: "lax",
+                    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
                 });
 
                 return res.json({ message: "Logged out successfully" });
