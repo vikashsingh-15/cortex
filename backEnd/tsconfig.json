@@ -17,6 +17,10 @@
     
   },
   "include": ["src"],
-  "exclude": ["node_modules"] 
+  "exclude": [
+    "node_modules",
+    "src/pipelines/ingestion-pipeline.ts",
+    "src/pipelines/qa-overdoc.ts"
+  ]
 }
 
