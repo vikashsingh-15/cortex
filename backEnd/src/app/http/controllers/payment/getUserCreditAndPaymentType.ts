@@ -3,7 +3,6 @@ import { Payment } from "@/app/models/PaymentSchema";
 import { User } from "@/app/models/userSchema";
 import { Request, Response, NextFunction } from "express";
 import { UserRepository } from "../auth/repository/userRepository";
-import { next } from "cheerio/dist/commonjs/api/traversing";
 
 
 export async function getUserCreditAndPaymentMethod(req: Request, res: Response,next:NextFunction) {
