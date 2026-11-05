@@ -26,6 +26,21 @@ export function expressServer(app: Express, PORT: number) {
     // resolve against this API's own origin and hit a route that does not exist.
     const frontendOrigin = allowedOrigins[0] || "http://localhost:5173"
 
+    // Must match the Authorised redirect URI in Google Cloud Console character for
+    // character. Trailing slashes are stripped because Google treats them as a
+    // different URI. APP_URL is a fallback so a missing CALL_BACK_URL does not send
+    // an empty redirect_uri. Logged so a mismatch can be spotted in the deploy logs.
+    const googleCallbackUrl =
+        process.env.CALL_BACK_URL?.trim().replace(/\/+$/, "") ||
+        (process.env.APP_URL
+            ? `${process.env.APP_URL.trim().replace(/\/+$/, "")}/auth/google/callback`
+            : undefined)
+
+    console.log(
+        `[oauth] redirect_uri sent to Google: ${googleCallbackUrl ?? "(unset - Google will fall back to the first registered redirect URI)"}`,
+    )
+    console.log(`[oauth] google client id: ${process.env.GOOGLE_CLIENT_ID ? "set" : "MISSING"}`)
+
     app.use(cors({
         origin: allowedOrigins,
         credentials: true,
@@ -92,7 +107,7 @@ export function expressServer(app: Express, PORT: number) {
             {
                 clientID: process.env.GOOGLE_CLIENT_ID as string,
                 clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-                callbackURL: process.env.CALL_BACK_URL,
+                callbackURL: googleCallbackUrl,
                 //  passReqToCallback: true,
             },
             async (accessToken: string, refreshToken: string, profile: any, done: any) => {
