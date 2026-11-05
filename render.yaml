@@ -1,0 +1,54 @@
+services:
+  - type: web
+    name: cortex-api
+    runtime: node
+    rootDir: backEnd
+    buildCommand: npm ci && NODE_OPTIONS=--max-old-space-size=2048 npm run build
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+# ---------------------------------------------------------------------------
+# Manual Render dashboard form (copy each field below when creating the service)
+# ---------------------------------------------------------------------------
+#
+# Name:               cortex-api
+# Region:             pick the region closest to your users / MongoDB Atlas cluster
+# Root Directory:     backEnd
+# Runtime:            Node
+# Build Command:      npm ci && NODE_OPTIONS=--max-old-space-size=2048 npm run build
+# Start Command:      npm start
+# Instance Type:      Free (testing) or a paid instance for production
+# Health Check Path:  /health
+#
+# Environment variables (set these in Render's Environment tab, as Secrets):
+#
+#   NODE_ENV             production
+#   DB_URL               mongodb+srv://<user>:<password>@<cluster>/<db>   (Secret)
+#   COOKIE_KEY           <long random secret>                               (Secret)
+#   JWT_TOKEN_KEY        <long random secret>                               (Secret)
+#   REFRESH_TOKEN_KEY    <long random secret>                               (Secret)
+#
+#   CLIENT_ORIGIN        https://your-frontend-domain.com
+#   APP_URL              https://your-render-service.onrender.com
+#   CALL_BACK_URL        https://your-render-service.onrender.com/auth/google/callback
+#   SUCCESS_REDIRECT_URL https://your-frontend-domain.com/auth/callback
+#
+#   GOOGLE_CLIENT_ID     <your Google OAuth client ID>                     (Secret)
+#   GOOGLE_CLIENT_SECRET <your Google OAuth client secret>                 (Secret)
+#   STRIPE_SECRET_KEY    <your Stripe secret key>                          (Secret)
+#   FIRE_WORKS_API_KEY   <your Fireworks API key>                          (Secret)
+#   COHERE_API_KEY       <your Cohere API key>                             (Secret)
+#   PINECONE_API_KEY     <your Pinecone API key>                           (Secret)
+#   PINECONE_INDEX       <your Pinecone index name>
+#   TAVILY_API_KEY       <your Tavily API key>                             (Secret)
+#   EXA_SEARCH_API_KEY   <your Exa/Tavily search API key>                 (Secret)
+#   ELEVEN_LAB_API_KEY   <your ElevenLabs API key>                         (Secret)
+#
+# Notes:
+# - Render injects PORT automatically; do not add a PORT env var.
+# - Use Render's "Secret" toggle for anything sensitive.
+# - After the service gets its real onrender.com URL, update APP_URL,
+#   CALL_BACK_URL, CLIENT_ORIGIN, and SUCCESS_REDIRECT_URL to the real domains.
