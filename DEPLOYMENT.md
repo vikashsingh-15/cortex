@@ -4,9 +4,11 @@ Environment files are preserved. The localhost values in `.env.example` are now 
 
 ## 1. Render: `backEnd`
 
-Create a Render Node Web Service manually. Set its Root Directory to `backEnd`, use Node 22 or later, `npm ci && NODE_OPTIONS=--max-old-space-size=2048 npm run build` as the build command, `npm start` as the start command, and `/health` as the health check.
+Create a Render Node Web Service manually. Set its Root Directory to `backEnd`, use Node 22 or later, `npm ci --omit=dev && NODE_OPTIONS=--max-old-space-size=2048 npm run build` as the build command, `npm start` as the start command, and `/health` as the health check.
 
 The production build now runs `tsc-alias` after TypeScript compilation, so Node can resolve the backend's `@/` imports. Render provides `PORT`; do not override it with a fixed value.
+
+Because Render builds with `NODE_ENV=production`, npm skips `devDependencies`. The TypeScript compiler, `tsc-alias`, and every `@types/*` package the build needs are therefore listed under `dependencies`, not `devDependencies`. Only `nodemon` and `ts-node` remain dev-only. Do not move them back, or the Render build will fail with `TS7016: Could not find a declaration file`.
 
 In Render's Environment settings, add every server-side key from `backEnd/.env.example`. Use these URL values after both services receive their final domains:
 

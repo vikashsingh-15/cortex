@@ -3,7 +3,7 @@ services:
     name: cortex-api
     runtime: node
     rootDir: backEnd
-    buildCommand: npm ci && NODE_OPTIONS=--max-old-space-size=2048 npm run build
+    buildCommand: npm ci --omit=dev && NODE_OPTIONS=--max-old-space-size=2048 npm run build
     startCommand: npm start
     healthCheckPath: /health
     envVars:
@@ -18,7 +18,7 @@ services:
 # Region:             pick the region closest to your users / MongoDB Atlas cluster
 # Root Directory:     backEnd
 # Runtime:            Node
-# Build Command:      npm ci && NODE_OPTIONS=--max-old-space-size=2048 npm run build
+# Build Command:      npm ci --omit=dev && NODE_OPTIONS=--max-old-space-size=2048 npm run build
 # Start Command:      npm start
 # Instance Type:      Free (testing) or a paid instance for production
 # Health Check Path:  /health
