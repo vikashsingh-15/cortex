@@ -22,6 +22,10 @@ export function expressServer(app: Express, PORT: number) {
         .map((origin) => origin.trim())
         .filter(Boolean)
 
+    // Absolute frontend origin used for OAuth failure redirects. A relative path would
+    // resolve against this API's own origin and hit a route that does not exist.
+    const frontendOrigin = allowedOrigins[0] || "http://localhost:5173"
+
     app.use(cors({
         origin: allowedOrigins,
         credentials: true,
@@ -142,7 +146,7 @@ export function expressServer(app: Express, PORT: number) {
     app.get(
         "/auth/google/callback",
         passport.authenticate("google", {
-            failureRedirect: "/auth/login",
+            failureRedirect: `${frontendOrigin}/auth/login`,
             successRedirect: process.env.SUCCESS_REDIRECT_URL, // frontend route
         })
     )
